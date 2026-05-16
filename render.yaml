@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════
+#  AIOS — Render.com Deployment Blueprint
+#  Free tier · Single web service · Monorepo
+# ═══════════════════════════════════════════════════════════
+
+services:
+  - type: web
+    name: aios-platform
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: ./
+    buildCommand: npm install && npm run build
+    startCommand: node packages/backend/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DB_PATH
+        value: ./data/aios.db
+      - key: DEMO_MODE
+        value: false
+      - key: GEMINI_API_KEY
+        sync: false  # Set manually in dashboard
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: UPLOAD_DIR
+        value: ./data/uploads
