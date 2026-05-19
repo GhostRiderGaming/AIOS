@@ -57,7 +57,7 @@ if (config.isProd) {
   app.use(express.static(frontendDist));
 
   // SPA fallback — serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
+  app.get(/.*/, (req, res, next) => {
     if (req.path.startsWith(API_PREFIX)) return next();
     res.sendFile(join(frontendDist, 'index.html'));
   });
