@@ -233,3 +233,4 @@ File Upload → Save to disk → Attach to chat message
 | 2026-05-19 | Deterministic tools over LLM parsing          | Pattern-matching engines > regex-on-LLM-output |
 | 2026-05-19 | Rate limiter in standalone middleware         | Circular import prevention (server↔routes)   |
 | 2026-05-19 | Per-user rate limiting (after auth)           | IP-based is useless behind proxies/NAT       |
+| 2026-05-19 | Regex route `/.*/` for SPA fallback           | Fixes Express 5 / path-to-regexp 8 `*` crash |
