@@ -67,8 +67,8 @@
 
 - **Scope:** ai-engine
 - **Files:** `providers/base.provider.js`, `providers/demo.provider.js`, `providers/ollama.provider.js`, `providers/gemini.provider.js`, `router.js`, `index.js`
-- **Description:** Provider-pattern AI engine with Demo Provider as primary (no LLM installed). 5 demo scenarios with pre-scripted agent responses, fuzzy keyword matching, simulated delays. Ollama and Gemini providers ready as stubs.
-- **Decision:** Demo Mode is primary, not fallback. All responses deterministic and vetted.
+- **Description:** Provider-pattern AI engine with Demo Provider as fallback. 5 demo scenarios with pre-scripted agent responses, fuzzy keyword matching, simulated delays. Ollama and Gemini providers fully implemented.
+- **Decision:** Auto-fallback chain: Gemini → Ollama → Demo.
 - **Status:** ✅ Complete
 
 ---
@@ -77,8 +77,8 @@
 
 - **Scope:** agents
 - **Files:** `agents/base.agent.js`, `agents/specialized.js`, `core/orchestrator.js`, `core/registry.js`, `index.js`
-- **Description:** 5 specialized agents extending BaseAgent, central orchestrator with parallel execution, agent registry singleton, pub/sub communication foundation.
-- **Decision:** All agents pre-registered at startup. Orchestrator runs agents in parallel via Promise.all for speed.
+- **Description:** 5 specialized agents extending BaseAgent, central orchestrator with sequential pipeline execution, agent registry singleton, pipeline context sharing between agents.
+- **Decision:** Sequential pipeline (not parallel) — each agent builds on prior findings, creating a genuine inter-agent reasoning chain.
 - **Status:** ✅ Complete
 
 ---
@@ -87,7 +87,7 @@
 
 - **Scope:** frontend
 - **Files:** `index.css`, `App.jsx`, `pages/*`, `components/layout/*`, `store/*`, `services/api.js`
-- **Description:** React SPA with Vite, dark theme with glassmorphism, gradient accents, and micro-animations. Login, Dashboard (metrics + agent grid + alerts), Agent Chat (multi-agent responses with colors), Security Panel (audit trail + alerts + permissions matrix).
+- **Description:** React SPA with Vite, dark theme with glassmorphism, gradient accents, and micro-animations. Login, Dashboard (metrics + agent grid + severity chart), Agent Chat (multi-agent responses with provider badges), Agent Hub (pipeline visualization), Security Panel (audit trail + alerts + permissions matrix), Settings.
 - **Decision:** Vanilla CSS design system over Tailwind for full control. Zustand over Redux for simplicity.
 - **Status:** ✅ Complete
 
@@ -106,7 +106,64 @@
 
 - **Scope:** root
 - **Files:** `DEMO_FLOW.md`, `README.md`, `ARCHITECTURE.md`
-- **Description:** Created comprehensive demo orchestration document with 4-act click-by-click flow, pre-scripted agent responses, fail-safe backups, narration cheat sheet. Updated README with "Why AIOS Wins" section and agent roster. Added agent personalities and demo mode architecture to ARCHITECTURE.md.
+- **Description:** Created comprehensive demo orchestration document with 4-act click-by-click flow, pre-scripted agent responses, fail-safe backups, narration cheat sheet. Updated README with architecture diagrams and agent roster.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-18 — FEAT: Gemini Live Integration (Phase 6)
+
+- **Scope:** ai-engine, backend
+- **Files:** `providers/gemini.provider.js`, `router.js`, `index.js`
+- **Description:** Fully implemented Gemini provider with rich system prompts per agent type, personality injection, conversation history, safety settings, and 30s timeout with AbortSignal. Model router with auto-fallback logic.
+- **Decision:** Each agent gets a unique system prompt reflecting its personality and role. Pipeline context from prior agents is injected into subsequent prompts.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-18 — FEAT: File Upload & Log Scanner
+
+- **Scope:** backend, agents
+- **Files:** `routes/upload.routes.js`, `tools/logScanner.js`, `services/chat.service.js`
+- **Description:** File upload endpoint accepting .log, .csv, .txt, .json, .xml, .yaml files (2MB max). LogScanner tool with 10 regex patterns detecting SQLi, XSS, brute force, privilege escalation, path traversal, command injection, and more. File contents injected into agent pipeline context.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-18 — CHORE: Deployment Configuration
+
+- **Scope:** root
+- **Files:** `Dockerfile`, `render.yaml`, `.env.example`
+- **Description:** Multi-stage Dockerfile (build frontend → serve with Express in production). Render.com blueprint with render.yaml for one-click deployment. Updated .env.example with all current variables.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-19 — FIX: dotenv Loading (Critical)
+
+- **Scope:** backend
+- **Files:** `packages/backend/server.js`, `packages/backend/package.json`
+- **Description:** **Root cause found:** `.env` file was never being loaded — `process.env.GEMINI_API_KEY` was always empty at runtime, causing silent fallback to Demo mode. Installed `dotenv` package and added path-resolved loading at the top of `server.js` pointing to monorepo root `.env`.
+- **Decision:** Must use explicit path resolution (`resolve(__dirname, '../../.env')`) because ES module import hoisting executes all imports before any inline code runs.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-19 — FIX: Switch to Gemini 2.5 Flash
+
+- **Scope:** root
+- **Files:** `.env`, `.env.example`
+- **Description:** `gemini-2.0-flash` API returned HTTP 429 (quota exceeded). Tested all available models — `gemini-2.5-flash` returned 200 OK. Switched primary model in `.env`.
+- **Decision:** `gemini-2.5-flash` as primary model. Provides newer capabilities with available free-tier quota.
+- **Status:** ✅ Complete
+
+---
+
+### 2026-05-19 — DOCS: Full Documentation Update
+
+- **Scope:** root
+- **Files:** `PROJECT_CONTEXT.md`, `ARCHITECTURE.md`, `FEATURE_LOG.md`, `DEMO_FLOW.md`, `README.md`, `.env.example`
+- **Description:** Complete rewrite of all documentation to reflect production-ready state. Updated technology stack (Gemini 2.5 Flash, sql.js, dotenv), accurate folder structure, current API endpoints, sequential pipeline architecture, decision log, and deployment instructions.
 - **Status:** ✅ Complete
 
 ---

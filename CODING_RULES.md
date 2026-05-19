@@ -1,6 +1,6 @@
 # CODING_RULES.md — AIOS Coding Standards
 
-> **Last Updated:** 2026-05-16  
+> **Last Updated:** 2026-05-19  
 > **Enforced across all packages.**
 
 ---
@@ -8,8 +8,10 @@
 ## 1. Language & Runtime
 
 - **Language:** JavaScript (ES2022+)
-- **Runtime:** Node.js 20 LTS
+- **Runtime:** Node.js 20+ LTS
 - **Modules:** ESM (`import`/`export`) — no CommonJS `require()`
+- **Database:** sql.js (pure JavaScript SQLite — no native bindings)
+- **Env Loading:** dotenv with explicit path resolution from monorepo root
 - **Frontend:** React 18 with JSX
 
 ---

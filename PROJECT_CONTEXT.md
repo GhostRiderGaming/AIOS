@@ -1,21 +1,23 @@
 # PROJECT_CONTEXT.md — AIOS Project Memory
 
-> **Last Updated:** 2026-05-16
+> **Last Updated:** 2026-05-19
 > **Owner:** GhostRiderGaming
 > **License:** MIT
+> **Status:** ✅ Production-Ready
 
 ---
 
 ## 1. Vision
 
-**AIOS** (Artificial Intelligence Operating System) — a privacy-first, cloud-independent operating system shell with an integrated local AI engine powered by multi-agent architecture.
+**AIOS** (Artificial Intelligence Operating System) — a privacy-first, multi-agent enterprise governance platform with live AI inference and sequential pipeline orchestration.
 
 ### Short-Term (Hackathon MVP — May 2026)
-Build a functional prototype demonstrating:
-- Local multi-agent orchestration (no cloud dependency)
-- Enterprise-grade agent security & governance (Track 1 alignment)
-- Agentic workflows with tool-calling capabilities (Agent Olympics alignment)
-- Real-time agent collaboration and task delegation
+Built and delivered:
+- ✅ Live multi-agent orchestration with Gemini 2.5 Flash
+- ✅ Enterprise-grade agent security & governance (Track 1 alignment)
+- ✅ Agentic workflows with tool-calling capabilities (Agent Olympics alignment)
+- ✅ Sequential agent collaboration with shared pipeline context
+- ✅ Full audit trail and explainability
 
 ### Long-Term
 A complete operating system with:
@@ -32,26 +34,22 @@ A complete operating system with:
 - **Dates:** May 11–19, 2026
 - **Prize Pool:** $10,000
 - **Primary Track:** 🔐 Track 1 — Agent Security & AI Governance
-- **Secondary Track:** 🤖 Track 2 — AI Agents (Gemini integration as optional cloud fallback)
-- **Venue:** San Jose McEnery Convention Center (hybrid)
+- **Secondary Track:** 🤖 Track 2 — AI Agents (Gemini integration live)
 - **Key Deliverables:**
-  - Guardrails and safety layers for agentic workflows
-  - Monitoring/observability for AI agents (hallucination detection, drift, misuse)
-  - Access control & permission framework for multi-agent systems
-  - Audit trails and explainability tooling
-  - Red-teaming framework for agent robustness
+  - ✅ Guardrails and safety layers for agentic workflows
+  - ✅ Monitoring/observability for AI agents
+  - ✅ Access control & permission framework for multi-agent systems
+  - ✅ Audit trails and explainability tooling
 
 ### Hackathon B: AI Agent Olympics
 - **Dates:** May 13–20, 2026
 - **Prize Pool:** $32,000+
 - **Primary Track:** 🧠 Intelligent Reasoning + 🤝 Collaborative Systems
-- **Secondary Track:** 🔄 Agentic Workflows + 🌍 Enterprise Utility
-- **Venue:** Fiera Milano, Italy (hybrid)
 - **Key Deliverables:**
-  - Autonomous agents with independent decision-making
-  - Multi-agent coordination and information sharing
-  - Tool-calling (APIs, databases, file system)
-  - Multi-step task management without human intervention
+  - ✅ Autonomous agents with independent decision-making
+  - ✅ Multi-agent coordination and information sharing
+  - ✅ Tool-calling (log scanner, file analysis)
+  - ✅ Multi-step task management via sequential pipeline
 
 ---
 
@@ -62,73 +60,79 @@ A complete operating system with:
 |---------------|---------------------------|----------------------------------|
 | Framework     | Vite + React 18           | Fast SPA with HMR               |
 | Language      | JavaScript (ES2022+)      | Browser & Node compatibility     |
-| Styling       | Vanilla CSS + CSS Modules | Scoped, no-framework styling     |
+| Styling       | Vanilla CSS               | Scoped, no-framework styling     |
 | State         | Zustand                   | Lightweight global state         |
-| Routing       | React Router v6           | Client-side navigation           |
+| Routing       | React Router v7           | Client-side navigation           |
 | Icons         | Lucide React              | Consistent icon system           |
+| Charts        | Recharts                  | Dashboard analytics              |
+| Markdown      | ReactMarkdown             | AI response formatting           |
 | Fonts         | Inter (Google Fonts)      | Modern typography                |
 
 ### Backend
 | Layer         | Technology                | Purpose                          |
 |---------------|---------------------------|----------------------------------|
-| Runtime       | Node.js 20 LTS           | Server runtime                   |
+| Runtime       | Node.js 20 LTS            | Server runtime                   |
 | Framework     | Express.js                | REST API server                  |
 | Language      | JavaScript (ES2022+)      | Shared language with frontend    |
-| Database      | SQLite (better-sqlite3)   | Local-first, zero-config DB      |
-| Auth          | JWT + bcrypt              | Stateless authentication         |
-| Validation    | Zod                       | Schema validation                |
+| Database      | SQLite (sql.js)            | Pure-JS, zero-config DB          |
+| Auth          | JWT + bcrypt               | Stateless authentication         |
+| Validation    | Zod                        | Schema validation                |
+| Env Loading   | dotenv                     | .env file reading                |
 
 ### AI / Agent Layer
-| Layer         | Technology                | Purpose                          |
-|---------------|---------------------------|----------------------------------|
-| Local LLM     | Ollama (llama3, mistral)  | Privacy-first local inference    |
-| Fallback LLM  | Google Gemini API         | Cloud fallback (optional)        |
-| Agent Framework | Custom multi-agent system | Orchestration, delegation        |
-| Embeddings   | Ollama embeddings         | Local vector search              |
-| Vector Store  | In-memory / SQLite FTS5   | Local knowledge retrieval        |
+| Layer           | Technology                | Purpose                          |
+|-----------------|---------------------------|----------------------------------|
+| Primary LLM     | Gemini 2.5 Flash (API)    | Live cloud inference             |
+| Local LLM       | Ollama (llama3, mistral)  | Privacy-first local inference    |
+| Demo Fallback   | DemoProvider              | Deterministic scripted responses |
+| Agent Framework | Custom multi-agent system | Sequential pipeline orchestration|
+| Tools           | LogScanner, FileAnalysis  | Real security threat detection   |
 
 ### DevOps
 | Layer         | Technology                | Purpose                          |
 |---------------|---------------------------|----------------------------------|
 | Package Mgr   | npm                       | Dependency management            |
 | Monorepo      | npm workspaces            | Shared deps across packages      |
-| Linting       | ESLint + Prettier         | Code quality                     |
-| Version Ctrl  | Git                       | Source control                   |
-| Testing       | Vitest                    | Unit & integration testing       |
+| Version Ctrl  | Git + GitHub              | Source control                   |
+| Deployment    | Render.com / Docker       | Free-tier cloud hosting          |
+| CI            | render.yaml blueprint     | One-click deploy                 |
 
 ---
 
 ## 4. Key Flows
 
-### Agent Orchestration Flow
+### Agent Orchestration Flow (Sequential Pipeline)
 ```
-User Input → AgentRouter → TaskPlanner → [Agent Pool]
-                                            ├─ SecurityAgent
-                                            ├─ ReasoningAgent
-                                            ├─ DataAgent
-                                            ├─ CodeAgent
-                                            └─ MonitorAgent
-                                         → ResultAggregator → Response
+User Input → Orchestrator → AI Engine (getRespondingAgents)
+  → Security Sentinel   (scan threats, share findings)
+  → Governance Auditor   (check compliance, ref Security)
+  → Intelligence Analyst (correlate patterns, ref Security + Governance)
+  → Workflow Coordinator (synthesize action plan, ref all prior)
+  → Code Architect       (implement if needed, ref Workflow plan)
+  → Response with all agent results + pipeline context
 ```
 
 ### Authentication Flow
 ```
-Register/Login → bcrypt hash → JWT issued → Token stored (httpOnly cookie)
+Register/Login → bcrypt hash → JWT issued → Token in localStorage
 → Protected routes validate JWT → Role-based access control
 ```
 
-### AI Inference Flow
+### AI Inference Flow (Auto-Fallback)
 ```
-User Query → Preprocessor → ModelRouter
-                              ├─ Ollama (local, preferred)
-                              └─ Gemini API (fallback)
-                           → PostProcessor → Safety Filter → Response
+User Query → ModelRouter
+               ├─ Gemini 2.5 Flash (cloud, primary) ← ACTIVE
+               ├─ Ollama (local, if running)
+               └─ Demo Provider (deterministic fallback)
+            → Agent System Prompt → Safety Settings → Response
 ```
 
-### Agent Security Flow
+### File Analysis Flow
 ```
-Agent Action → Permission Check → Guardrail Validation
-→ Execution Sandbox → Audit Logger → Action Result
+File Upload → Save to disk → Attach to chat message
+→ LogScanner regex analysis (10 threat patterns)
+→ Inject file contents into agent pipeline context
+→ Agents analyze with file awareness
 ```
 
 ---
@@ -138,21 +142,22 @@ Agent Action → Permission Check → Guardrail Validation
 ```
 ┌─────────────────────────────────────────────┐
 │                  Frontend                    │
-│  React, Zustand, React Router, Lucide       │
+│  React, Zustand, React Router, Recharts     │
+│  ReactMarkdown, Lucide, Inter Font          │
 ├─────────────────────────────────────────────┤
 │                API Gateway                   │
-│  Express.js REST endpoints                  │
+│  Express.js REST endpoints + CORS           │
 ├──────────┬──────────┬───────────────────────┤
 │ Auth     │ Agents   │ Services              │
 │ JWT      │ Router   │ AI Inference          │
-│ bcrypt   │ Planner  │ Security Monitor      │
-│ RBAC     │ Pool     │ Audit Logger          │
+│ bcrypt   │ Pipeline │ Log Scanner           │
+│ RBAC     │ Registry │ Audit Logger          │
 ├──────────┴──────────┴───────────────────────┤
 │              Data Layer                      │
-│  SQLite (better-sqlite3) + FTS5             │
+│  SQLite (sql.js) — pure JavaScript          │
 ├─────────────────────────────────────────────┤
 │           AI Inference Engine               │
-│  Ollama (local) / Gemini API (fallback)     │
+│  Gemini 2.5 Flash │ Ollama │ Demo Provider  │
 └─────────────────────────────────────────────┘
 ```
 
@@ -160,16 +165,19 @@ Agent Action → Permission Check → Guardrail Validation
 
 ## 6. Environment Variables
 
-| Variable              | Required | Default          | Description                     |
-|-----------------------|----------|------------------|---------------------------------|
-| `PORT`                | No       | `3001`           | Backend server port             |
-| `JWT_SECRET`          | Yes      | —                | JWT signing secret              |
-| `DB_PATH`             | No       | `./data/aios.db` | SQLite database path            |
-| `OLLAMA_BASE_URL`     | No       | `http://localhost:11434` | Ollama API endpoint      |
-| `OLLAMA_MODEL`        | No       | `llama3`         | Default Ollama model            |
-| `GEMINI_API_KEY`      | No       | —                | Google Gemini API key           |
-| `NODE_ENV`            | No       | `development`    | Runtime environment             |
-| `VITE_API_URL`        | No       | `http://localhost:3001` | Frontend API target      |
+| Variable              | Required | Default                  | Description                     |
+|-----------------------|----------|--------------------------|---------------------------------|
+| `PORT`                | No       | `3001`                   | Backend server port             |
+| `JWT_SECRET`          | Yes      | `dev-secret-*`           | JWT signing secret              |
+| `DB_PATH`             | No       | `./data/aios.db`         | SQLite database path            |
+| `OLLAMA_BASE_URL`     | No       | `http://localhost:11434` | Ollama API endpoint             |
+| `OLLAMA_MODEL`        | No       | `llama3`                 | Default Ollama model            |
+| `GEMINI_API_KEY`      | Yes      | —                        | Google Gemini API key           |
+| `GEMINI_MODEL`        | No       | `gemini-2.5-flash`       | Gemini model to use             |
+| `NODE_ENV`            | No       | `development`            | Runtime environment             |
+| `VITE_API_URL`        | No       | `http://localhost:3001`  | Frontend API target             |
+| `DEMO_MODE`           | No       | `false`                  | Force demo mode (true/false)    |
+| `UPLOAD_DIR`          | No       | `./data/uploads`         | File upload directory           |
 
 ---
 
@@ -179,14 +187,20 @@ Agent Action → Permission Check → Guardrail Validation
 |---------------------------|-------------|
 | Repository initialized    | ✅ Complete |
 | Project documentation     | ✅ Complete |
-| Folder structure          | 🔲 Pending  |
-| Backend scaffold          | 🔲 Pending  |
-| Frontend scaffold         | 🔲 Pending  |
-| AI service integration    | 🔲 Pending  |
-| Agent framework           | 🔲 Pending  |
-| Security & governance     | 🔲 Pending  |
-| Multi-agent orchestration | 🔲 Pending  |
-| Demo-ready MVP            | 🔲 Pending  |
+| Folder structure          | ✅ Complete |
+| Backend scaffold          | ✅ Complete |
+| Frontend scaffold         | ✅ Complete |
+| AI service integration    | ✅ Complete |
+| Agent framework           | ✅ Complete |
+| Security & governance     | ✅ Complete |
+| Multi-agent orchestration | ✅ Complete |
+| Gemini Live inference     | ✅ Complete |
+| File upload & scanning    | ✅ Complete |
+| Sequential pipeline       | ✅ Complete |
+| Dashboard & analytics     | ✅ Complete |
+| Agent Hub visualization   | ✅ Complete |
+| Render deployment config  | ✅ Complete |
+| Demo-ready MVP            | ✅ Complete |
 
 ---
 
@@ -196,8 +210,13 @@ Agent Action → Permission Check → Guardrail Validation
 |------------|-----------------------------------------------|----------------------------------------------|
 | 2026-05-16 | JavaScript over TypeScript                    | Speed of development for hackathon timeline  |
 | 2026-05-16 | SQLite over PostgreSQL                        | Zero-config, local-first, privacy aligned    |
-| 2026-05-16 | Ollama as primary AI engine                   | Local inference, no cloud dependency         |
-| 2026-05-16 | Gemini as optional fallback                   | Hackathon Track 2 alignment                  |
+| 2026-05-16 | sql.js over better-sqlite3                    | Pure JS, no native build issues on Node 26   |
+| 2026-05-16 | Ollama as local AI engine                     | Local inference, no cloud dependency         |
+| 2026-05-16 | Gemini as cloud primary                       | Hackathon Track 2 alignment, free tier       |
 | 2026-05-16 | Monorepo with npm workspaces                  | Shared utilities, single repo management     |
 | 2026-05-16 | Custom agent framework over LangChain/CrewAI  | Full control, lightweight, hackathon scope   |
 | 2026-05-16 | Dual-hackathon targeting                      | Maximize exposure and prize potential         |
+| 2026-05-18 | Sequential pipeline over parallel execution   | True inter-agent reasoning chain required    |
+| 2026-05-18 | dotenv for env loading                        | ES module hoisting prevents inline config    |
+| 2026-05-19 | Gemini 2.5 Flash over 2.0 Flash               | Free-tier quota exhausted on 2.0 Flash       |
+| 2026-05-19 | Render.com over Vultr                         | Free tier, no credit card, instant deploy    |
