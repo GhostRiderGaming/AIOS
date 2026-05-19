@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore.js';
 import { Sidebar } from './components/layout/Sidebar.jsx';
 import { Header } from './components/layout/Header.jsx';
+import { ToastContainer } from './components/Toast.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { Chat } from './pages/Chat.jsx';
 import { AgentHub } from './pages/AgentHub.jsx';
@@ -55,6 +56,7 @@ export default function App() {
           </>
         )}
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

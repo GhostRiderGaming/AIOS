@@ -15,8 +15,9 @@
 │  │          PRESENTATION LAYER (Frontend)          │  │
 │  │  React SPA · Zustand · Recharts · Vite         │  │
 │  │  Pages: Dashboard, Chat, AgentHub, Security    │  │
+│  │  🔥 Pipeline Tracker · SSE Stream Consumer     │  │
 │  └─────────────────────┬──────────────────────────┘  │
-│                        │ HTTP/REST                    │
+│                        │ HTTP/REST + SSE Streaming    │
 │  ┌─────────────────────▼──────────────────────────┐  │
 │  │           API GATEWAY (Backend)                 │  │
 │  │  Express.js · JWT Auth · Zod Validation        │  │

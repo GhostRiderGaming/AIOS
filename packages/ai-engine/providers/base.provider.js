@@ -39,4 +39,16 @@ export class BaseProvider {
   async agentResponse(agentType, input, options = {}) {
     throw new Error(`${this.name}: agentResponse() not implemented`);
   }
+
+  /**
+   * Determine which agents should respond to input.
+   * Override in subclasses for intelligent routing.
+   * @param {string} input
+   * @returns {Promise<string[]>}
+   */
+  async getRespondingAgents(input) {
+    // Default: use all agents
+    const { AGENT_TYPES } = await import('@aios/shared/constants');
+    return Object.values(AGENT_TYPES);
+  }
 }

@@ -107,6 +107,80 @@ export function getAgentStatus() {
 }
 
 /**
+ * Orchestrate with real-time callbacks for SSE streaming.
+ * Each agent fires onAgentStart/onAgentComplete so the frontend can show progress.
+ * @param {{ input: string, userId?: number, conversationId?: string, fileContents?: string }} params
+ * @param {{ onPipelineStart: Function, onAgentStart: Function, onAgentComplete: Function, onPipelineDone: Function }} callbacks
+ * @returns {Promise<{ plan: string, results: Array, pipeline: boolean }>}
+ */
+export async function orchestrateStreaming({ input, userId, conversationId, fileContents }, callbacks = {}) {
+  const aiEngine = getAIEngine();
+
+  const respondingTypes = await aiEngine.getRespondingAgents(input);
+  const orderedTypes = PIPELINE_ORDER.filter((t) => respondingTypes.includes(t));
+  const agents = registry.getByTypes(orderedTypes);
+
+  const agentNames = agents.map((a) => `${a.emoji} ${a.name}`).join(' → ');
+  const plan = `🧠 Orchestrator: Task analyzed. Executing sequential pipeline: ${agentNames}. Each agent builds on prior findings.`;
+
+  // Notify pipeline start
+  const pipelineAgents = agents.map((a) => ({
+    type: a.type,
+    name: a.name,
+    emoji: a.emoji,
+  }));
+  callbacks.onPipelineStart?.({ plan, agents: pipelineAgents });
+
+  const pipelineContext = [];
+  const results = [];
+
+  for (const agent of agents) {
+    if (!agent.shouldActivate(input, pipelineContext)) continue;
+
+    // Notify agent starting
+    callbacks.onAgentStart?.({ agentType: agent.type, agentName: agent.name, emoji: agent.emoji });
+
+    try {
+      const result = await agent.process(input, {
+        aiEngine,
+        pipelineContext: [...pipelineContext],
+        fileContents,
+      });
+
+      results.push(result);
+      pipelineContext.push({
+        agentType: result.agentType,
+        agentName: result.agentName,
+        content: result.content,
+        metadata: result.metadata,
+      });
+
+      // Notify agent complete — stream the result immediately
+      callbacks.onAgentComplete?.({ ...result, pipelineIndex: results.length - 1 });
+    } catch (error) {
+      const errorResult = {
+        agentType: agent.type,
+        agentName: agent.name,
+        emoji: agent.emoji,
+        content: `${agent.emoji} ${agent.name}: Error during analysis — ${error.message}. Pipeline continuing with remaining agents.`,
+        metadata: { error: true, errorMessage: error.message, provider: 'error' },
+      };
+      results.push(errorResult);
+      pipelineContext.push({
+        agentType: agent.type,
+        agentName: agent.name,
+        content: `[ERROR] ${error.message}`,
+        metadata: { error: true },
+      });
+      callbacks.onAgentComplete?.({ ...errorResult, pipelineIndex: results.length - 1 });
+    }
+  }
+
+  callbacks.onPipelineDone?.({ totalAgents: results.length });
+  return { plan, results, pipeline: true };
+}
+
+/**
  * Invoke a specific agent by type (direct, no pipeline).
  * @param {string} agentType
  * @param {string} input

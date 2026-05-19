@@ -1,6 +1,6 @@
 /**
  * @fileoverview Gemini provider — Google AI Studio integration.
- * Uses Gemini 2.0 Flash for real-time agent inference.
+ * Uses Gemini 2.5 Flash for real-time agent inference.
  */
 
 import { BaseProvider } from './base.provider.js';
@@ -19,7 +19,7 @@ export class GeminiProvider extends BaseProvider {
     super('gemini');
     this.apiKey = apiKey;
     this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
-    this.model = model || 'gemini-2.0-flash';
+    this.model = model || 'gemini-2.5-flash';
   }
 
   async isAvailable() {
@@ -145,17 +145,31 @@ export class GeminiProvider extends BaseProvider {
     // Build system prompt from the rich profile
     let systemPrompt = profile.systemPrompt;
 
-    // Inject context from previous agents if available
+    // Inject STRUCTURED context from previous agents (not raw text dump)
     if (options.pipelineContext?.length) {
-      const contextBlock = options.pipelineContext
-        .map((ctx) => `[${ctx.agentName}]: ${ctx.content}`)
-        .join('\n\n');
-      systemPrompt += `\n\nCONTEXT FROM OTHER AGENTS (reference these findings in your analysis):\n${contextBlock}`;
+      const structuredContext = options.pipelineContext.map((ctx) => {
+        const meta = ctx.metadata || {};
+        const parts = [`### ${ctx.agentName}`];
+
+        // Include key structured data points, not full verbose text
+        if (meta.toolsUsed?.length) parts.push(`Tools used: ${meta.toolsUsed.join(', ')}`);
+        if (meta.scanReport) parts.push(`Scan: ${meta.scanReport.totalFindings} findings (${meta.scanReport.critical} critical), Risk: ${meta.scanReport.riskScore}/10`);
+        if (meta.ipReport) parts.push(`IPs: ${meta.ipReport.totalIPs} analyzed, ${meta.ipReport.malicious} malicious`);
+        if (meta.complianceReport) parts.push(`Compliance: ${meta.complianceReport.score}/100 (Grade: ${meta.complianceReport.grade}), ${meta.complianceReport.summary?.fail || 0} failures across ${(meta.complianceReport.summary?.frameworksCovered || []).join(', ')}`);
+        if (meta.correlationReport) parts.push(`Risk: ${meta.correlationReport.riskScore}/10 (${meta.correlationReport.riskLevel}), Confidence: ${meta.correlationReport.confidence}%, Correlations: ${meta.correlationReport.correlationsFound}`);
+        if (meta.actionPlan) parts.push(`Action Plan: ${meta.actionPlan.summary?.totalActions || 0} actions, Priority: ${meta.actionPlan.plan?.overallPriority || 'N/A'}`);
+        if (meta.securityScore != null) parts.push(`Code Security Score: ${meta.securityScore}/100`);
+
+        // Include a SUMMARY of content (first 300 chars), not the full output
+        parts.push(`Summary: ${ctx.content.slice(0, 300)}${ctx.content.length > 300 ? '...' : ''}`);
+        return parts.join('\n');
+      }).join('\n\n---\n\n');
+      systemPrompt += `\n\nSTRUCTURED FINDINGS FROM PRIOR AGENTS (reference these in your analysis):\n${structuredContext}`;
     }
 
     // Inject file contents if uploaded
     if (options.fileContents) {
-      systemPrompt += `\n\nUPLOADED FILE CONTENTS (analyze this data):\n\`\`\`\n${options.fileContents}\n\`\`\``;
+      systemPrompt += `\n\nUPLOADED FILE CONTENTS (analyze this data):\n\`\`\`\n${options.fileContents.slice(0, 10000)}\n\`\`\``;
     }
 
     const result = await this.complete(input, {
@@ -180,12 +194,77 @@ export class GeminiProvider extends BaseProvider {
   }
 
   /**
-   * Determine which agents should respond based on input analysis.
-   * For Gemini mode, we use keyword matching to select relevant agents.
+   * Determine which agents should respond using LLM-based intelligent routing.
+   * The model itself analyzes the input and decides which agents are relevant.
+   * Falls back to keyword matching if the LLM call fails.
+   * @param {string} input
+   * @returns {Promise<string[]>}
+   */
+  async getRespondingAgents(input) {
+    // Try LLM-based routing first
+    if (this.apiKey) {
+      try {
+        return await this._llmRouting(input);
+      } catch (error) {
+        console.warn(`[Gemini] LLM routing failed: ${error.message}, falling back to keyword matching`);
+      }
+    }
+    return this._keywordRouting(input);
+  }
+
+  /**
+   * LLM-based routing: Ask Gemini which agents should handle this input.
+   * @param {string} input
+   * @returns {Promise<string[]>}
+   * @private
+   */
+  async _llmRouting(input) {
+    const routingPrompt = `You are a task router for a multi-agent AI system. Analyze the user's input and decide which specialized agents should handle it.
+
+Available agents:
+- security: Threat detection, access monitoring, anomaly flagging, log scanning, IP analysis
+- governance: Compliance checking (SOC2/GDPR/HIPAA), policy enforcement, regulation mapping
+- intelligence: Pattern analysis, risk scoring, data correlation, trend forecasting
+- workflow: Action planning, task sequencing, remediation coordination, timeline estimation
+- code: Code generation, vulnerability review, architecture design, debugging
+
+User input: "${input.slice(0, 500)}"
+
+Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
+{"agents": ["agent1", "agent2"], "reasoning": "brief explanation"}`;
+
+    const result = await this.complete(routingPrompt, {
+      temperature: 0,
+      maxTokens: 200,
+    });
+
+    // Parse JSON from response
+    const jsonMatch = result.content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in routing response');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    const validTypes = Object.values(AGENT_TYPES);
+    const agents = (parsed.agents || []).filter((a) => validTypes.includes(a));
+
+    if (agents.length === 0) {
+      throw new Error('LLM returned no valid agents');
+    }
+
+    // Log routing decision for observability
+    console.log(`[AI Router] LLM routing: ${agents.join(', ')} — ${parsed.reasoning || 'no reasoning'}`);
+
+    // Ensure at least 2 agents, max 4
+    if (agents.length === 1) agents.push(AGENT_TYPES.WORKFLOW);
+    return agents.slice(0, 4);
+  }
+
+  /**
+   * Fallback keyword-based routing.
    * @param {string} input
    * @returns {string[]}
+   * @private
    */
-  getRespondingAgents(input) {
+  _keywordRouting(input) {
     const lower = input.toLowerCase();
 
     const agentRelevance = {
@@ -216,29 +295,22 @@ export class GeminiProvider extends BaseProvider {
       ],
     };
 
-    // Score each agent's relevance
     const scores = {};
     for (const [type, keywords] of Object.entries(agentRelevance)) {
       scores[type] = keywords.reduce((score, kw) => score + (lower.includes(kw) ? 1 : 0), 0);
     }
 
-    // Select agents with any relevance, sorted by score
     const relevant = Object.entries(scores)
       .filter(([, score]) => score > 0)
       .sort((a, b) => b[1] - a[1])
       .map(([type]) => type);
 
-    // If no specific match, send to Security + Intelligence + Workflow (safe defaults)
     if (relevant.length === 0) {
       return [AGENT_TYPES.SECURITY, AGENT_TYPES.INTELLIGENCE, AGENT_TYPES.WORKFLOW];
     }
-
-    // Always include at least 2 agents for multi-agent feel, max 4
     if (relevant.length === 1) {
-      // Add Workflow as coordinator
       relevant.push(AGENT_TYPES.WORKFLOW);
     }
-
     return relevant.slice(0, 4);
   }
 }

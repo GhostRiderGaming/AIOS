@@ -41,9 +41,9 @@ export function Dashboard() {
 
   // Build chart data from alerts
   const alertData = [
-    { name: 'Critical', value: metrics?.alertsList?.filter(a => a.severity === 'critical').length || 2, color: '#ef4444' },
-    { name: 'High', value: metrics?.alertsList?.filter(a => a.severity === 'high').length || 1, color: '#f59e0b' },
-    { name: 'Medium', value: metrics?.alertsList?.filter(a => a.severity === 'medium').length || 1, color: '#3b82f6' },
+    { name: 'Critical', value: metrics?.alertsList?.filter(a => a.severity === 'critical').length || 0, color: '#ef4444' },
+    { name: 'High', value: metrics?.alertsList?.filter(a => a.severity === 'high').length || 0, color: '#f59e0b' },
+    { name: 'Medium', value: metrics?.alertsList?.filter(a => a.severity === 'medium').length || 0, color: '#3b82f6' },
     { name: 'Low', value: metrics?.alertsList?.filter(a => a.severity === 'low').length || 0, color: '#22c55e' },
   ].filter(d => d.value > 0);
 

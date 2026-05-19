@@ -28,10 +28,17 @@ import { systemRouter, securityRouter } from './routes/system.routes.js';
 const app = express();
 
 // ─── Global Middleware ──────────────────────────────────────
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: config.isProd
+    ? (process.env.ALLOWED_ORIGINS || 'https://aios-platform.onrender.com').split(',')
+    : true,
+  credentials: true,
+}));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.text({ limit: '5mb' }));
 app.use(cookieParser());
+
+// ─── Rate limiting is applied per-route AFTER auth — see middleware/rateLimit.js
 
 // ─── API Routes ─────────────────────────────────────────────
 app.use(`${API_PREFIX}/auth`, authRoutes);

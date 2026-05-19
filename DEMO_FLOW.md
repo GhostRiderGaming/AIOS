@@ -42,19 +42,20 @@
 
 ---
 
-### ACT 2: The Threat (90 seconds)
-**Goal:** Show multi-agent collaboration on a real enterprise scenario.
+### ACT 2: The Threat & WOW Factor (90 seconds)
+**Goal:** Show multi-agent collaboration with **live pipeline visualization** — the WOW moment.
 
 | Step | Action | Screen | Narration |
 |------|--------|--------|-----------|
 | 2.1 | Click "Agent Chat" in sidebar | Chat | *"Let's simulate a real enterprise security incident."* |
 | 2.2 | Type prompt (see below) | Chat Input | *"An employee reports suspicious access patterns in the server logs."* |
-| 2.3 | Press Enter / Send | Chat | *"Watch what happens — the orchestrator dispatches this to our agent pipeline."* |
-| 2.4 | Pipeline processing indicator | Chat | *"Agents are now analyzing **in sequence**. Each one builds on the prior agent's findings."* |
-| 2.5 | Security Sentinel responds (red) | Chat | *"Security Sentinel detects the threat, maps it to **MITRE ATT&CK** frameworks."* |
+| 2.3 | Press Enter / Send | Chat | *"Watch the **pipeline tracker** — you can see agents activating in sequence."* |
+| 2.4 | 🔥 Pipeline Tracker appears | Chat | *"The glowing agent is currently analyzing. Watch it cascade — each agent builds on the prior agent's findings."* |
+| 2.5 | Security Sentinel responds (red) | Chat | *"Security Sentinel detects the threat, maps it to **MITRE ATT&CK** frameworks. Watch the pipeline step turn green ✅"* |
 | 2.6 | Intelligence Analyst responds (purple) | Chat | *"Intelligence Analyst correlates patterns, assigns a **risk score of 9.0/10**."* |
-| 2.7 | Workflow Coordinator responds (green) | Chat | *"And Workflow Coordinator synthesizes everything into an actionable remediation plan."* |
-| 2.8 | Point to provider badges | Chat | *"Notice the **Gemini** badge on each response — this is live AI, not scripted."* |
+| 2.7 | Workflow Coordinator responds (green) | Chat | *"Workflow Coordinator synthesizes everything into an actionable remediation plan."* |
+| 2.8 | Point to provider badges | Chat | *"Notice the **⚡ Gemini Live** badge on each response — this is real-time AI, not scripted."* |
+| 2.9 | Click "Copy All" in export bar | Export Bar | *"One click to copy all agent findings. Or download a full **Markdown report**."* |
 
 **Recommended Prompt:**
 ```
@@ -65,8 +66,14 @@ incidents this quarter. What are the risks and recommended actions?
 
 **Expected Live Gemini Response Themes:**
 - Security Sentinel: MITRE ATT&CK mapping (T1110, T1078), threat level assessment
+  - Tool: LogScanner → risk score, brute force pattern detection
+  - Tool: IPEnrichment → IP reputation, threat classification
+- Governance Auditor: SOC2/GDPR compliance assessment
+  - Tool: ComplianceChecker → score (0-100), grade (A-F), per-framework breakdown
 - Intelligence Analyst: Risk score (8-10/10), pattern correlation, confidence %
+  - Tool: CorrelationEngine → weighted aggregate risk, cross-agent correlations
 - Workflow Coordinator: Numbered remediation steps with timeline
+  - Tool: ActionPlanner → prioritized actions, team assignments, effort estimates
 
 ---
 
@@ -144,7 +151,9 @@ DEMO_MODE=true (or Gemini quota exhausted)
 | Live AI?               | *"Powered by Gemini 2.5 Flash. Every response is generated in real-time, not scripted."* |
 | What if Gemini fails?  | *"Auto-fallback: Gemini → Ollama local → Demo mode. Zero downtime."* |
 | Cost?                  | *"Free tier Gemini. Self-hostable. No vendor lock-in."* |
-| Production-ready?      | *"Audit trail, permissions, fallback chain — enterprise-grade foundation."* |
+| Production-ready?      | *"178 test assertions, 6 real tools, rate limiting, RBAC, audit trail — battle-tested."* |
+| Real tools?            | *"Every agent uses deterministic analysis engines. ComplianceChecker has 16 rules across 6 frameworks. CorrelationEngine uses weighted scoring. Not LLM regex parsing."* |
+| Testing?               | *"178 assertions across 12 test groups including negative cases, edge cases, and rate limiter verification. Zero failures."* |
 
 ---
 

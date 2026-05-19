@@ -730,12 +730,54 @@ a:hover {
 .stagger-children > *:nth-child(5) { animation-delay: 240ms; }
 
 /* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .agent-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .app-sidebar {
     display: none;
   }
   .app-main {
     margin-left: 0;
+  }
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+  .page-header__title {
+    font-size: 1.4rem;
+  }
+  .chat-message {
+    max-width: 95%;
+  }
+  .pipeline-tracker__steps {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pipeline-tracker__connector {
+    transform: rotate(90deg);
+  }
+  .export-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-content {
+    padding: var(--space-md);
+  }
+  .chat-input-row {
+    gap: 4px;
   }
 }
 
@@ -1066,3 +1108,314 @@ a:hover {
 /* ── Security Panel Tab Override ──────────────────────────── */
 .border-primary { border-color: var(--border-default); }
 
+/* ═══════════════════════════════════════════════════════════
+   PIPELINE TRACKER — THE WOW FACTOR
+   Animated sequential agent visualization
+   ═══════════════════════════════════════════════════════════ */
+
+.pipeline-tracker {
+  background: rgba(99, 102, 241, 0.04);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin: 8px 0;
+  align-self: stretch;
+  max-width: 100%;
+}
+
+.pipeline-tracker__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-secondary);
+  margin-bottom: 14px;
+}
+
+.pipeline-tracker__steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.pipeline-tracker__step-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pipeline-tracker__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.pipeline-tracker__step--pending {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.pipeline-tracker__step--active {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid var(--agent-color, var(--accent-primary));
+  color: var(--text-primary);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.2), 0 0 32px rgba(99, 102, 241, 0.08);
+  animation: pipeline-glow 2s ease-in-out infinite;
+}
+
+.pipeline-tracker__step--completed {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--status-success);
+}
+
+@keyframes pipeline-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(99, 102, 241, 0.15); }
+  50% { box-shadow: 0 0 24px rgba(99, 102, 241, 0.35), 0 0 48px rgba(99, 102, 241, 0.1); }
+}
+
+.pipeline-tracker__emoji {
+  font-size: 1.1rem;
+}
+
+.pipeline-tracker__name {
+  font-size: 0.78rem;
+}
+
+.pipeline-tracker__status-icon {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+}
+
+.pipeline-tracker__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-top-color: var(--accent-secondary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.pipeline-tracker__connector {
+  color: var(--text-muted);
+  font-size: 1rem;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.pipeline-tracker__connector--active {
+  color: var(--status-success);
+  opacity: 1;
+}
+
+.pipeline-tracker__progress {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.pipeline-tracker__progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--status-success));
+  border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.pipeline-tracker__progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+  animation: progress-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-shimmer {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* ═══ EXPORT BAR ═══ */
+.export-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(34, 197, 94, 0.04);
+  border: 1px solid rgba(34, 197, 94, 0.12);
+  border-radius: var(--radius-md);
+  margin: 8px 0;
+}
+
+.export-bar__label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.export-bar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.export-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.export-bar__btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+/* ═══ MESSAGE ACTION BUTTONS ═══ */
+.chat-message__actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.chat-message:hover .chat-message__actions {
+  opacity: 1;
+}
+
+.chat-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.chat-action-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+/* ═══ Enhanced Code Blocks ═══ */
+.chat-message__content pre {
+  position: relative;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.chat-message__content pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+
+/* ═══ Streaming Agent Reveal Animation ═══ */
+.chat-message--agent {
+  animation: agent-reveal 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes agent-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══ Pipeline Metrics Bar ═══ */
+.pipeline-metrics {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  margin: 8px 0;
+  border-radius: var(--radius-md);
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.pipeline-metrics__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pipeline-metrics__item svg {
+  color: var(--accent-secondary);
+}
+
+/* ═══ Tool Invocation Badges ═══ */
+.tool-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tool-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.tool-badge svg {
+  color: #f59e0b;
+}

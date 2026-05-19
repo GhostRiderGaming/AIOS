@@ -7,15 +7,15 @@ import {
   systemController,
   securityController,
 } from '../controllers/system.controller.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
 
 const systemRouter = Router();
 systemRouter.get('/health', systemController.health);
 systemRouter.get('/metrics', requireAuth, systemController.metrics);
 
 const securityRouter = Router();
-securityRouter.get('/audit-log', requireAuth, securityController.getAuditLogs);
+securityRouter.get('/audit-log', requireAuth, requireRole('admin'), securityController.getAuditLogs);
 securityRouter.get('/alerts', requireAuth, securityController.getAlerts);
-securityRouter.get('/permissions', requireAuth, securityController.getPermissions);
+securityRouter.get('/permissions', requireAuth, requireRole('admin', 'analyst'), securityController.getPermissions);
 
 export { systemRouter, securityRouter };

@@ -18,6 +18,9 @@ Built and delivered:
 - ✅ Agentic workflows with tool-calling capabilities (Agent Olympics alignment)
 - ✅ Sequential agent collaboration with shared pipeline context
 - ✅ Full audit trail and explainability
+- ✅ SSE streaming pipeline with live visualization (WOW factor)
+- ✅ Copy/export agent findings as Markdown reports
+- ✅ Mobile-responsive layout with comprehensive breakpoints
 
 ### Long-Term
 A complete operating system with:
@@ -48,8 +51,9 @@ A complete operating system with:
 - **Key Deliverables:**
   - ✅ Autonomous agents with independent decision-making
   - ✅ Multi-agent coordination and information sharing
-  - ✅ Tool-calling (log scanner, file analysis)
+  - ✅ Tool-calling: 6 real tools (LogScanner, IPEnrichment, CodeValidator, ComplianceChecker, CorrelationEngine, ActionPlanner)
   - ✅ Multi-step task management via sequential pipeline
+  - ✅ 178 test assertions, 12 test groups, zero failures
 
 ---
 
@@ -61,23 +65,25 @@ A complete operating system with:
 | Framework     | Vite + React 18           | Fast SPA with HMR               |
 | Language      | JavaScript (ES2022+)      | Browser & Node compatibility     |
 | Styling       | Vanilla CSS               | Scoped, no-framework styling     |
-| State         | Zustand                   | Lightweight global state         |
+| State         | Zustand                   | Lightweight global state + pipeline tracking |
 | Routing       | React Router v7           | Client-side navigation           |
 | Icons         | Lucide React              | Consistent icon system           |
 | Charts        | Recharts                  | Dashboard analytics              |
 | Markdown      | ReactMarkdown             | AI response formatting           |
 | Fonts         | Inter (Google Fonts)      | Modern typography                |
+| Streaming     | SSE (ReadableStream)      | Real-time pipeline visualization |
 
 ### Backend
 | Layer         | Technology                | Purpose                          |
 |---------------|---------------------------|----------------------------------|
 | Runtime       | Node.js 20 LTS            | Server runtime                   |
-| Framework     | Express.js                | REST API server                  |
+| Framework     | Express.js                | REST API + SSE streaming server  |
 | Language      | JavaScript (ES2022+)      | Shared language with frontend    |
 | Database      | SQLite (sql.js)            | Pure-JS, zero-config DB          |
 | Auth          | JWT + bcrypt               | Stateless authentication         |
 | Validation    | Zod                        | Schema validation                |
 | Env Loading   | dotenv                     | .env file reading                |
+| Streaming     | text/event-stream (SSE)    | Real-time agent result delivery  |
 
 ### AI / Agent Layer
 | Layer           | Technology                | Purpose                          |
@@ -86,7 +92,7 @@ A complete operating system with:
 | Local LLM       | Ollama (llama3, mistral)  | Privacy-first local inference    |
 | Demo Fallback   | DemoProvider              | Deterministic scripted responses |
 | Agent Framework | Custom multi-agent system | Sequential pipeline orchestration|
-| Tools           | LogScanner, FileAnalysis  | Real security threat detection   |
+| Tools (6)       | LogScanner, IPEnrichment, CodeValidator, ComplianceChecker, CorrelationEngine, ActionPlanner | Deterministic analysis engines |
 
 ### DevOps
 | Layer         | Technology                | Purpose                          |
@@ -104,12 +110,12 @@ A complete operating system with:
 ### Agent Orchestration Flow (Sequential Pipeline)
 ```
 User Input → Orchestrator → AI Engine (getRespondingAgents)
-  → Security Sentinel   (scan threats, share findings)
-  → Governance Auditor   (check compliance, ref Security)
-  → Intelligence Analyst (correlate patterns, ref Security + Governance)
-  → Workflow Coordinator (synthesize action plan, ref all prior)
-  → Code Architect       (implement if needed, ref Workflow plan)
-  → Response with all agent results + pipeline context
+  → Security Sentinel   [LogScanner + IPEnrichment]    → scanReport + ipReport
+  → Governance Auditor  [ComplianceChecker]             → complianceReport (score, grade)
+  → Intelligence Analyst [CorrelationEngine]            → correlationReport (risk, correlations)
+  → Workflow Coordinator [ActionPlanner]                → actionPlan (prioritized steps)
+  → Code Architect      [CodeValidator]                 → securityReview (score, CWE findings)
+  → Response with all agent results + structured metadata
 ```
 
 ### Authentication Flow
@@ -131,8 +137,9 @@ User Query → ModelRouter
 ```
 File Upload → Save to disk → Attach to chat message
 → LogScanner regex analysis (10 threat patterns)
-→ Inject file contents into agent pipeline context
-→ Agents analyze with file awareness
+→ IPEnrichment (extract & classify IPs)
+→ Inject file contents + tool results into agent pipeline context
+→ Each subsequent agent receives prior tool outputs as structured metadata
 ```
 
 ---
@@ -201,6 +208,9 @@ File Upload → Save to disk → Attach to chat message
 | Agent Hub visualization   | ✅ Complete |
 | Render deployment config  | ✅ Complete |
 | Demo-ready MVP            | ✅ Complete |
+| Real tools (all 5 agents) | ✅ Complete |
+| Infrastructure hardening  | ✅ Complete |
+| Comprehensive test suite  | ✅ Complete |
 
 ---
 
@@ -220,3 +230,6 @@ File Upload → Save to disk → Attach to chat message
 | 2026-05-18 | dotenv for env loading                        | ES module hoisting prevents inline config    |
 | 2026-05-19 | Gemini 2.5 Flash over 2.0 Flash               | Free-tier quota exhausted on 2.0 Flash       |
 | 2026-05-19 | Render.com over Vultr                         | Free tier, no credit card, instant deploy    |
+| 2026-05-19 | Deterministic tools over LLM parsing          | Pattern-matching engines > regex-on-LLM-output |
+| 2026-05-19 | Rate limiter in standalone middleware         | Circular import prevention (server↔routes)   |
+| 2026-05-19 | Per-user rate limiting (after auth)           | IP-based is useless behind proxies/NAT       |

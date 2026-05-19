@@ -24,6 +24,31 @@
 
 ---
 
+### 2026-05-19 — FEAT: SSE Streaming Pipeline & WOW Factor UI
+
+- **Scope:** agents, backend, frontend
+- **Files:**
+  - `packages/agents/core/orchestrator.js` — added `orchestrateStreaming()` with callbacks
+  - `packages/agents/index.js` — exported `orchestrateStreaming`
+  - `packages/backend/controllers/chat.controller.js` — added SSE `sendMessageStream` endpoint
+  - `packages/backend/routes/chat.routes.js` — added `POST /chat/stream` route
+  - `packages/backend/services/chat.service.js` — added `processMessageStreaming()` method
+  - `packages/frontend/src/services/api.js` — added SSE stream consumer using ReadableStream
+  - `packages/frontend/src/store/chatStore.js` — added pipeline state tracking (pipelineState, activeAgent, completedAgents)
+  - `packages/frontend/src/pages/Chat.jsx` — added PipelineTracker, ExportBar, message actions (copy/collapse)
+  - `packages/frontend/src/index.css` — pipeline tracker CSS, export bar, streaming animations, mobile responsive
+  - `render.yaml` — fixed model name to gemini-2.5-flash
+  - `README.md` — updated with SSE streaming features and architecture diagram
+- **Description:** Implemented Server-Sent Events (SSE) streaming for real-time pipeline visualization. The backend orchestrator now streams each agent's result as it completes, and the frontend shows a live animated pipeline tracker with glowing active step, progress bar with shimmer effect, and progressive agent response reveal. Added copy-to-clipboard per message, export report as markdown download, collapse/expand agent responses, and comprehensive mobile responsive breakpoints. Fixed stale model reference in render.yaml.
+- **Decision:**
+  - SSE over WebSocket for simplicity and HTTP/2 compatibility
+  - Graceful fallback to REST `/chat/message` if SSE fails
+  - Pipeline state managed in Zustand store for reactive UI updates
+  - CSS-only animations (no animation libraries) for performance
+- **Status:** ✅ Complete
+
+---
+
 ### 2026-05-16 — DOCS: Project Foundation Documents
 
 - **Scope:** root
@@ -164,6 +189,36 @@
 - **Scope:** root
 - **Files:** `PROJECT_CONTEXT.md`, `ARCHITECTURE.md`, `FEATURE_LOG.md`, `DEMO_FLOW.md`, `README.md`, `.env.example`
 - **Description:** Complete rewrite of all documentation to reflect production-ready state. Updated technology stack (Gemini 2.5 Flash, sql.js, dotenv), accurate folder structure, current API endpoints, sequential pipeline architecture, decision log, and deployment instructions.
+- **Status:** ✅ Complete
+
+---
+### 2026-05-19 — REFACTOR: 9.9/10 Overhaul — Real Tools for All Agents
+
+- **Scope:** agents, backend, tests
+- **Files:**
+  - `packages/agents/tools/complianceChecker.js` — **NEW** 16-rule policy engine (SOC2, GDPR, HIPAA, PCI-DSS, ISO 27001, NIST)
+  - `packages/agents/tools/actionPlanner.js` — **NEW** Structured remediation planner from pipeline findings
+  - `packages/agents/tools/correlationEngine.js` — **NEW** Weighted cross-agent risk aggregation
+  - `packages/agents/agents/specialized.js` — Complete rewrite: ALL 5 agents now use real tools
+  - `packages/backend/middleware/rateLimit.js` — **NEW** Extracted rate limiter with periodic cleanup
+  - `packages/backend/server.js` — Removed inline rate limiter, restricted CORS in production
+  - `packages/backend/routes/chat.routes.js` — Rate limiting after auth (uses userId not IP)
+  - `packages/ai-engine/providers/gemini.provider.js` — Updated context passing for new metadata keys
+  - `packages/frontend/src/pages/AgentHub.jsx` — Updated capabilities for all agents
+  - `tests/pipeline.test.js` — Expanded from 37 to 178 assertions across 12 test groups
+  - `README.md` — Complete rewrite with accurate tool matrix
+- **Description:** Addressed all weaknesses identified in brutal hackathon judge review:
+  1. **GovernanceAgent** now uses `ComplianceChecker` (16 rules, 6 frameworks) — no more regex-parsing LLM output
+  2. **WorkflowAgent** now uses `ActionPlanner` (reads all prior findings, generates prioritized remediation) — no more empty shell
+  3. **IntelligenceAgent** now uses `CorrelationEngine` (weighted risk scoring, cross-agent correlation detection) — real tool, not plumbing
+  4. **Rate limiter memory leak fixed** — periodic cleanup every 60s
+  5. **Rate limiter middleware order fixed** — runs AFTER auth, uses userId not IP
+  6. **CORS restricted** in production mode
+  7. **178 test assertions** including negative cases, edge cases, rate limiter, all 6 tools
+- **Decision:**
+  - All tools are deterministic (no external API dependencies) for hackathon reliability
+  - Rate limiter extracted to standalone middleware to prevent circular imports
+  - Compliance rules are pattern-matching, not keyword decoration — each has a real check function
 - **Status:** ✅ Complete
 
 ---
